@@ -6,16 +6,13 @@ const jwt = require("jsonwebtoken");
 const app = express();
 const PORT = 5001;
 
-app.use(cors());
+app.use(cors({ origin: "http://127.0.0.1:5501" }));
 app.use(bodyParser.json());
-
 
 const SECRET_KEY = "birat059";
 
-
-let users = []; 
-let todos = []; 
-
+let users = [];
+let todos = [];
 
 const generateToken = (username) => {
   return jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
@@ -34,38 +31,44 @@ const authenticate = (req, res, next) => {
   }
 };
 
-
-app.post("/auth/signup", (req, res) => {
+app.post("/auth/signup", async (req, res) => {
   const { username, password } = req.body;
   if (users.find((user) => user.username === username)) {
     return res.status(400).json({ message: "User already exists" });
   }
-  users.push({ username, password });
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  users.push({ username, password: hashedPassword });
   return res.status(201).json({ message: "User registered successfully" });
 });
 
-
-app.post("/auth/signin", (req, res) => {
+app.post("/auth/signin", async (req, res) => {
   const { username, password } = req.body;
-  const user = users.find((u) => u.username === username && u.password === password);
-  if (!user) {
+  const user = users.find((u) => u.username === username);
+  if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
+
   const token = generateToken(username);
   return res.json({ token });
 });
 
-
 app.get("/todos", authenticate, (req, res) => {
+  const { page = 1, pageSize = 5 } = req.query;
   const userTodos = todos.filter((todo) => todo.username === req.username);
-  return res.json(userTodos);
-});
+  const startIndex = (page - 1) * pageSize;
+  const paginatedTodos = userTodos.slice(startIndex, startIndex + pageSize);
 
+  return res.json({
+    todos: paginatedTodos,
+    total: userTodos.length,
+  });
+});
 
 app.post("/todos", authenticate, (req, res) => {
   const { text } = req.body;
   const newTodo = {
-    id: todos.length + 1,
+    id: Date.now(),
     username: req.username,
     text,
     completed: false,
@@ -73,7 +76,6 @@ app.post("/todos", authenticate, (req, res) => {
   todos.push(newTodo);
   return res.status(201).json(newTodo);
 });
-
 
 app.put("/todos/:id", authenticate, (req, res) => {
   const { id } = req.params;
@@ -88,20 +90,18 @@ app.put("/todos/:id", authenticate, (req, res) => {
   return res.json(todo);
 });
 
-app.patch('/todos/:id', (req, res) => {
+app.patch("/todos/:id", authenticate, (req, res) => {
   const { id } = req.params;
   const { text } = req.body;
   const todo = todos.find(todo => todo.id == id);
 
   if (!todo) {
-    return res.status(404).json({ message: 'To-Do not found' });
+    return res.status(404).json({ message: "To-Do not found" });
   }
 
-  todo.text = text; 
-  res.status(200).json(todo);  
+  todo.text = text;
+  res.status(200).json(todo);
 });
-
-
 
 app.delete("/todos/:id", authenticate, (req, res) => {
   const { id } = req.params;
@@ -115,7 +115,6 @@ app.delete("/todos/:id", authenticate, (req, res) => {
   return res.status(204).send();
 });
 
-
-app.listen(PORT, () => {
+app.listen(PORT, 'localhost', () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
