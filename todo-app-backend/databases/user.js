@@ -1,11 +1,12 @@
 const express = require("express");
 const { UserModel, TodoModel } = require("./db");
+const {auth, JWT_SECRET} = require("/auth");
 const jwt = require("jsonwebtoken");
 
-const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 const JWT_SECRET = "birat04";
 
-
+mongoose.connect("");
 
 const app = express();
 app.use(express.json());
@@ -15,11 +16,11 @@ app.post("/signup", async function (req, res) {
     const password = req.body.password;
     const name = req.body.name;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    
 
     await UserModel.create({
         email: email,
-        password: hashedPassword,
+        password: password,
         name: name
     });
     res.json({
@@ -36,26 +37,20 @@ app.post("/signin", async function (req, res) {
         email: email
     });
 
-    if (!user) {
-        return res.status(400).json({
-            message: "Invalid email or password"
-        });
+    if(!user){
+        const token = jwt.sigh({
+            id: user._id.toString()
+        },JWT_SECRET);
+
+        res.json({
+        token
+        })
+    } else{
+        res.status(404).json({
+            message: "Invalid creds"
+        })
     }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-        return res.status(400).json({
-            message: "Invalid email or password"
-        });
-    }
-
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
-
-    res.json({
-        message: "You are signed in",
-        token: token
-    });
+       
 });
 
 function auth(req, res, next) {
