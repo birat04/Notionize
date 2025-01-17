@@ -1,12 +1,12 @@
 const express = require("express");
-const { UserModel, TodoModel } = require("./db");
-const {auth, JWT_SECRET} = require("/auth");
+const { UserModel, TodoModel } = require("./databases/db");
+const {auth, JWT_SECRET} = require("./todo-app-backend/auth");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
-const JWT_SECRET = "birat04";
 
-mongoose.connect("");
+
+mongoose.connect("mongodb+srv://birat059:Biratroka055@cluster44.fdvo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster44");
 
 const app = express();
 app.use(express.json());
@@ -52,22 +52,6 @@ app.post("/signin", async function (req, res) {
     }
        
 });
-
-function auth(req, res, next) {
-    const token = req.headers.authorization;
-
-    const response = jwt.verify(token, JWT_SECRET);
-
-    if (response) {
-        req.userId = response.id;
-        next();
-    } else {
-        res.status(403).json({
-            message: "Incorrect creds"
-        })
-    }
-}
-
 
 app.post("/todo", auth, async function (req, res) {
     const userId = req.user.id;
