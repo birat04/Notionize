@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 
 
-mongoose.connect("mongodb+srv://birat059:Biratroka055@cluster44.fdvo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster44");
+mongoose.connect("mongodb+srv://birat059:Rarjun%40055@cluster44.fdvo7.mongodb.net/?retryWrites=true&w=majority&appName=Cluster44");
 
 const app = express();
 app.use(express.json());
@@ -34,18 +34,19 @@ app.post("/signin", async function (req, res) {
     const password = req.body.password;
 
     const user = await UserModel.findOne({
-        email: email
+        email: email,
+        password : password
     });
     const passwordMatch = bcrypt.compare(password,user.password);
     if(user && passwordMatch){
-        const token = jwt.sigh({
+        const token = jwt.sign({
             id: user._id.toString()
         },JWT_SECRET);
 
         res.json({
         token
         })
-    } else{
+    } else {
         res.status(404).json({
             message: "Invalid creds"
         })
