@@ -1,0 +1,17 @@
+node_modules/
+
+.env
+
+logs/
+*.log
+npm-debug.log*
+
+dist/
+build/
+out/
+
+*.tsbuildinfo
+
+.DS_Store
+
+.vscode/
