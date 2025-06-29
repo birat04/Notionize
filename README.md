@@ -6,8 +6,8 @@ A full-stack productivity app inspired by Notion. Organize your notes, todos, an
 
 1. **Clone the repository**
    ```sh
-   git clone https://github.com/birat04/todo.git
-   cd notionize
+   git clone https://github.com/birat04/Notionize
+   cd Notionize
    ```
 
 2. **Install dependencies**

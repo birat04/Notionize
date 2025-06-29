@@ -1,12 +1,36 @@
+version: '3.9'
 
 services:
-  server:
+  backend:
     build:
-      context: .
-    environment:
-      NODE_ENV: production
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/usr/src/app
     ports:
-      - 3000:3000
+      - "3000:3000" 
+    environment:
+      - DATABASE_URL="postgresql://neondb_owner:npg_6e7oTMFKPnku@ep-solitary-truth-a1iyvkas-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/usr/src/app
+    ports:
+      - "3000:3000" 
 
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tododb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
-
+volumes:
+  pgdata:
