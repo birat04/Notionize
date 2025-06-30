@@ -1,24 +1,47 @@
+import express from "express";
 import { PrismaClient } from "@prisma/client";
+import { parse } from "path";
+const app = express();
 
 const client = new PrismaClient();
 
-async function createUser() {
-  try {
-    await client.users.create({
-      data: {
-        username: "birat05",
-        email: "birat05@gmail.com",
-        password: "password123", 
-        age: 22
-      },
-    });
+app.get("/users", async (req, res) => {
+  const users = await client.users.findMany();
+  res.json({
+    users
+  });
+});
+app.get("/todos/:id", async (req, res) => {
+  const id = req.params.id;
+  const user = await client.users.findFirst({
+    where: {
+      id: parseInt(id)
+    },
+    select: {
+      todos: true,
+      username: true,
+      password: true,
+    }
+  });
+  res.json({
+    user
+  });
+});
 
-    console.log("User created!");
-  } catch (error) {
-    console.error("Error creating user:", error);
-  } finally {
-    await client.$disconnect();
-  }
+app.listen(3000, () => {
+  console.log("Server is running on http://localhost:3000");
+});
+async function createUser() {
+  const user = await client.users.findFirst({
+    where: {
+      id: 1
+
+    },
+    include: {
+      addresses: true
+    }
+  })
+  console.log(user)
 }
 
 createUser();
