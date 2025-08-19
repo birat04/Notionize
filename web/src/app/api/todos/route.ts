@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     const todo = await prisma.todo.create({ data: { title, description, user_id: userId } })
     return NextResponse.json({ todo }, { status: 201 })
   } catch (error) {
-    if (error instanceof z.ZodError) return NextResponse.json({ error: 'Validation error', details: error.errors }, { status: 400 })
+    if (error instanceof z.ZodError) return NextResponse.json({ error: 'Validation error', issues: error.issues }, { status: 400 })
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 }

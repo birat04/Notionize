@@ -26,7 +26,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const todo = await prisma.todo.update({ where: { id }, data })
     return NextResponse.json({ todo })
   } catch (error) {
-    if (error instanceof z.ZodError) return NextResponse.json({ error: 'Validation error', details: error.errors }, { status: 400 })
+    if (error instanceof z.ZodError) return NextResponse.json({ error: 'Validation error', issues: error.issues }, { status: 400 })
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 }
