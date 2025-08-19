@@ -2,7 +2,7 @@ import axios from 'axios'
 import type { User, Todo, AuthResponse, Address } from '@/types'
 
 const api = axios.create({
-  baseURL: '', // Next.js API routes
+  baseURL: '', 
   headers: { 'Content-Type': 'application/json' },
 })
 

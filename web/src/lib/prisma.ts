@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 
-// Ensure the Prisma Client is a singleton in dev to avoid connection leaks
+
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
 export const prisma: PrismaClient =
