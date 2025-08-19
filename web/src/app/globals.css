@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --border: #e5e7eb;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Utility components similar to previous app */
+.btn { @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none; }
+.btn-primary { @apply bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90 h-10 px-4; }
+.btn-ghost { @apply hover:bg-black/5 dark:hover:bg-white/10 h-10 px-3; }
+.input { @apply h-10 w-full rounded-md border border-[var(--border)] bg-[var(--background)] px-3 text-sm outline-none focus:ring-2; }
+.card { @apply rounded-lg border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] shadow-sm; }
+.card-content { @apply p-4; }
+.text-muted-foreground { @apply text-black/60 dark:text-white/60; }
+.bg-card { background-color: var(--card); }
+.bg-background { background-color: var(--background); }
+.border-border { border-color: var(--border); }
+.text-primary-foreground { color: var(--primary-foreground); }
+.bg-primary { background-color: var(--primary); }
+.hover\:bg-accent:hover { @apply bg-black/5 dark:bg-white/10; }
